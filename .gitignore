@@ -1,0 +1,2 @@
+# Ignore pasta local do Terraform
+.terraform/
