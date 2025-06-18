@@ -5,10 +5,12 @@ on:
 #     # branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
-    runs-on:
-      - codebuild-cicd-${{ github.run_id }}-${{ github.run_attempt }}
 
     env:
       AWS_REGION: us-east-1
