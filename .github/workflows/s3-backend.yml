@@ -12,7 +12,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     env:
       AWS_REGION: us-east-1
       AWS_ACCOUNT_ID: 125480470368
@@ -58,10 +58,10 @@ jobs:
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          cat <<EOF > dev/backend.hcl
+          cat > dev/backend.hcl <<EOF
           bucket  = "${BUCKET_NAME}"
-          key     = "env/$ENVIRONMENT/terraform.tfstate"
-          region  = "${{ env.AWS_REGION }}"
+          key     = "env/${ENVIRONMENT}/terraform.tfstate"
+          region  = "${AWS_REGION}"
           encrypt = true
           EOF
         
