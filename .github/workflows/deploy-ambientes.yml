@@ -25,18 +25,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # env:
-    #   AWS_REGION: ${{ github.event.inputs.region }}
-    #   AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id }}
-    #   ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
-    #   ENVIRONMENT: ${{ github.event.inputs.environment }}
-     
     env:
-      AWS_REGION: us-east-1
-      AWS_ACCOUNT_ID: 125480470368
-      ROLE_ARN_ACCOUNT: arn:aws:iam::125480470368:role/github-actions-danielbarreeto1
-      ENVIRONMENT: dev
-
+      AWS_REGION: ${{ github.event.inputs.region }}
+      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id }}
+      ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
+      ENVIRONMENT: ${{ github.event.inputs.environment }}
+     
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -76,10 +70,10 @@ jobs:
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          cat <<EOF > ${{github.event.inputs.environment}}/backend.hcl
+          cat > ${{github.event.inputs.environment}}/backend.hcl <<EOF
           bucket  = "${BUCKET_NAME}"
-          key     = "env/$ENVIRONMENT/terraform.tfstate"
-          region  = "${{ env.AWS_REGION }}"
+          key     = "env/${ENVIRONMENT}/terraform.tfstate"
+          region  = "${AWS_REGION}"
           encrypt = true
           EOF
 
