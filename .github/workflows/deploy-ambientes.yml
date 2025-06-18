@@ -25,12 +25,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      AWS_REGION: ${{ github.event.inputs.region }}
-      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id }}
-      ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
-      ENVIRONMENT: ${{ github.event.inputs.environment }}
+    # env:
+    #   AWS_REGION: ${{ github.event.inputs.region }}
+    #   AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id }}
+    #   ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
+    #   ENVIRONMENT: ${{ github.event.inputs.environment }}
      
+    env:
+      AWS_REGION: us-east-1
+      AWS_ACCOUNT_ID: 125480470368
+      ROLE_ARN_ACCOUNT: arn:aws:iam::125480470368:role/github-actions-danielbarreeto1
+      ENVIRONMENT: dev
 
     steps:
       - name: Checkout code
@@ -51,10 +56,6 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.12.0
-
-      - name: Install yq
-        run: |
-          sudo snap install yq
 
       - name: Determine environment and generate backend.hcl
         id: backend
