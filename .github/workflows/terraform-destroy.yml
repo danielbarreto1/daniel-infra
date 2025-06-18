@@ -1,0 +1,85 @@
+name: Terraform Destroy
+on:
+  # push:
+  #   # branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      account_id:
+        description: 'AWS Account ID'
+        required: true
+      region:
+        description: 'AWS Region (ex: us-east-1)'
+        required: true
+        default: 'us-east-1'
+      environment:
+        description: 'Environment (ex: dev, staging, prod)'
+        required: true
+        default: 'dev'
+
+jobs:
+  deploy:
+    runs-on:
+      - codebuild-cicd-${{ github.run_id }}-${{ github.run_attempt }}
+
+    env:
+      AWS_REGION: ${{ github.event.inputs.region  }}
+      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id  }}
+      ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/TerraformGithubAction
+      ENVIRONMENT: ${{ github.event.inputs.environment  }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Configure Git credentials
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ROLE_ARN_ACCOUNT }}
+          role-session-name: GitHubTerraformSession
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.12.0
+
+      - name: Determine environment and generate backend.hcl
+        id: backend
+        run: |
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          if [ "$BRANCH_NAME" = "main" ]; then
+            ENVIRONMENT="${{ env.ENVIRONMENT }}"
+          else
+            ENVIRONMENT="$BRANCH_NAME"
+          fi
+      
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+      
+          YAML_FILE="${{github.event.inputs.environment}}/environments/$ENVIRONMENT.yaml"
+      
+          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"')
+          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }')
+      
+          BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
+      
+          cat <<EOF > ${{github.event.inputs.environment}}/backend.hcl
+          bucket  = "${BUCKET_NAME}"
+          key     = "env/$ENVIRONMENT/terraform.tfstate"
+          region  = "${{ env.AWS_REGION }}"
+          encrypt = true
+          EOF
+        
+      
+      - name: Terraform Destroy - Infra
+        working-directory: ./${{github.event.inputs.environment}}
+        run: |
+          terraform init -backend-config=./backend.hcl
+          terraform plan -var="environment=${{ github.event.inputs.environment }}"
+          terraform destroy -auto-approve -var="environment=${{ github.event.inputs.environment }}"
+
+          
+          

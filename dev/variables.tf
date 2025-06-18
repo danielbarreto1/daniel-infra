@@ -12,7 +12,7 @@ variable "domain" {
 variable "account_id" {
   type        = string
   description = "ID da conta AWS"
-  default     = "125480470368"
+  default     = "663293147050"
 }
 
 variable "tags" {

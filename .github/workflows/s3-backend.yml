@@ -1,0 +1,85 @@
+name: Terraform S3 Backend Deployment
+
+on:
+#   push:
+#     # branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+      - codebuild-cicd-${{ github.run_id }}-${{ github.run_attempt }}
+
+    env:
+      AWS_REGION: us-east-1
+      AWS_ACCOUNT_ID: 663293147050
+      ROLE_ARN_ACCOUNT: arn:aws:iam::663293147050:role/CodebuildDeployerRole
+    #   BUCKET_NAME: infra-new-account-663293147050
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Configure Git credentials
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ROLE_ARN_ACCOUNT }}
+          role-session-name: GitHubTerraformSession
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.12.0
+
+      - name: Determine environment and generate backend.hcl
+        id: backend
+        run: |
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          if [ "$BRANCH_NAME" = "main" ]; then
+            ENVIRONMENT="dev"
+          else
+            ENVIRONMENT="$BRANCH_NAME"
+          fi
+      
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+      
+          YAML_FILE="dev/environments/$ENVIRONMENT.yaml"
+      
+          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"')
+          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }')
+      
+          BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
+      
+          cat <<EOF > dev/backend.hcl
+          bucket  = "${BUCKET_NAME}"
+          key     = "env/$ENVIRONMENT/terraform.tfstate"
+          region  = "${{ env.AWS_REGION }}"
+          encrypt = true
+          EOF
+        
+      - name: Terraform Init & Apply - Backend
+        working-directory: ./dev/backend
+        run: |
+          terraform init -backend-config=./backend.hcl
+          terraform plan -var="environment=${{ env.ENVIRONMENT }}"
+          terraform apply -auto-approve -var="environment=${{ env.ENVIRONMENT }}"
+      
+          
+          
+      - name: Upload S3 Environment Files to Bucket Root
+        run: |
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          if [ "$BRANCH_NAME" = "main" ]; then
+            ENVIRONMENT="dev"
+          else
+            ENVIRONMENT="$BRANCH_NAME"
+          fi
+          
+          echo "Uploading files from s3/$ENVIRONMENT to s3://${{ env.BUCKET_NAME }}/"
+
+#          aws s3 cp "s3/$ENVIRONMENT" "s3://data-arch-s3-motor-ingestao-scripts-010928211830" --recursivename: Terraform Infra Deployment

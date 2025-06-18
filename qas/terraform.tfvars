@@ -1,52 +1,37 @@
-vpc_cidr_block     = "10.37.0.0/18"
 availability_zones = ["us-east-1a", "us-east-1b"]
-region             = "us-east-1"
-
-tags = {
-  Owner       = "infra"
-  Domain      = "inteligencia-dados"
-  Environment = "dev"
-  Provisioning-method   = "terraform"
-}
-
-tags_vpc = {
-  Name        = "id-dev-vpc"
-}
 
 private_subnet_names = [
-  "iddev-subnet-private1-us-east-1a",
-  "iddev-subnet-private2-us-east-1b",
-  "iddev-subnet-private4-us-east-1a",
-  "iddev-subnet-private5-us-east-1b"
+  "infra-qas-subnet-private1-az-1a",
+  "infra-qas-subnet-private2-az-1b",
+  "infra-qas-subnet-private3-az-1a",
+  "infra-qas-subnet-private4-az-1b"
 ]
 
 public_subnet_names = [
-  "iddev-subnet-public1-us-east-1a",
-  "iddev-subnet-public2-us-east-1b"
+  "infra-qas-subnet-public1-az-1a",
+  "infra-qas-subnet-public2-az-1b"
 ]
 
 // Cidr Blocks subnets
 subnet_cidr_blocks_private = [
-  "10.37.12.0/22",
-  "10.37.16.0/22",
-  "10.37.24.0/22",
-  "10.37.28.0/22",
+  "10.60.8.0/22",
+  "10.60.12.0/22",
+  "10.60.16.0/22",
+  "10.60.20.0/22"
 ]
 
 subnet_cidr_blocks_public = [
-  "10.37.0.0/22",
-  "10.37.4.0/22"
+  "10.60.0.0/22",
+  "10.60.4.0/22"
 ]
-
 
 // Route-tables
 
 private_route_table_names = [
-  "iddev-rtb-private1-us-east-1a",
-  "iddev-rtb-private2-us-east-1b",
-  "iddev-rtb-private4-us-east-1a",
-  "iddev-rtb-private5-us-east-1b",
-  "iddev-rtb-private6-us-east-1c"
+  "infra-qas-rtb-private1-az-1a",
+  "infra-qas-rtb-private2-az-1b",
+  "infra-qas-rtb-private3-az-1b",
+  "infra-qas-rtb-private4-az-1b"
 ]
 
 routes_rtb_private1 = [
@@ -63,7 +48,7 @@ eips = {
   nat_gateway = {
     allocation_id = null
     tags = {
-      Name       = "eip-nat"
+      Name = "eip-nat"
     }
   }
 }

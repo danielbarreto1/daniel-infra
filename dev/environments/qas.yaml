@@ -1,7 +1,0 @@
-# environments:
-#   prod:
-#     account:
-#       id: "010928211728"
-#     backend:
-#       name_prefix: data-ecs-ingestao
-#     name_data_pipeline: "-"

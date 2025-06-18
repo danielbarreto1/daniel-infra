@@ -1,5 +1,18 @@
-variable "vpc_cidr_block" {
-  type = string
+variable "environment" {
+  type    = string
+  default = "prd"
+}
+
+variable "domain" {
+  type        = string
+  description = "Nome do domínio"
+  default     = "infra-prd"
+}
+
+variable "account_id" {
+  type        = string
+  description = "ID da conta AWS"
+  default     = "663293147050"
 }
 
 variable "tags" {
@@ -7,13 +20,10 @@ variable "tags" {
   default = {}
 }
 
-variable "tags_vpc" {
-  type    = map(string)
-  default = {}
-}
-
 variable "region" {
-  type = string
+  description = "Região default do provider"
+  type        = string
+  default     = "us-east-1"
 }
 
 variable "availability_zones" {
@@ -21,17 +31,9 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-// Module Subnet 
-
-// Public subnet
-
 variable "mapPublicIP" {
   default = false
 }
-
-# variable "public_subnet_id" {
-#   type = string
-# }
 
 variable "public_subnet_names" {
   description = "Map para subrede pública."
@@ -44,10 +46,6 @@ variable "subnet_cidr_blocks_public" {
 }
 
 // Private subnet
-
-# variable "private_subnet_id" {
-#   type = string
-# }
 
 variable "private_subnet_names" {
   description = "Map para subrede privada."
@@ -91,7 +89,6 @@ variable "security_groups" {
   }))
 }
 
-
 // EIps
 
 variable "eips" {
@@ -114,23 +111,4 @@ variable "routes_rtb_private2" {
 }
 variable "private_route_table_names" {
   type = list(string)
-}
-
-
-// Ec2
-
-variable "ec2_bi" {
-  type = object({
-    name          = string
-    ami           = string
-    instance_type = string
-  })
-}
-
-variable "ec2_key_name" {
-  type = string
-}
-
-variable "private_ips" {
-  type = map(string)
 }
