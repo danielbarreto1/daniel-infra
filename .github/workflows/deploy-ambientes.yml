@@ -81,6 +81,8 @@ jobs:
           region  = "${{ env.AWS_REGION }}"
           encrypt = true
           EOF
+
+        
         
       - name: Terraform Init & Apply - Backend
         working-directory: ./${{ github.event.inputs.environment }}
@@ -110,3 +112,4 @@ jobs:
       #     echo "Uploading files from s3/$ENVIRONMENT to s3://${{ env.BUCKET_NAME }}/"
 
 #          aws s3 cp "s3/$ENVIRONMENT" "s3://data-arch-s3-motor-ingestao-scripts-010928211830" --recursivename: Terraform Infra Deployment
+
