@@ -57,14 +57,14 @@ jobs:
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
           if [ "$BRANCH_NAME" = "main" ]; then
-            ENVIRONMENT="dev"
+            ENVIRONMENT="${{ env.ENVIRONMENT }}"
           else
             ENVIRONMENT="$BRANCH_NAME"
           fi
       
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
       
-          YAML_FILE="dev/environments/$ENVIRONMENT.yaml"
+          YAML_FILE="${{github.event.inputs.environment}}/environments/$ENVIRONMENT.yaml"
       
           ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"')
           BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }')
