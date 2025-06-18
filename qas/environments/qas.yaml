@@ -1,7 +1,7 @@
 environments:
   dev:
     account:
-      id: "663293147050"
+      id: "125480470368"
     backend:
       name_prefix: infra-new-account
     name_data_pipeline: "-"
