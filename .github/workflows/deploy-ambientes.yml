@@ -57,24 +57,24 @@ jobs:
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
           if [ "$BRANCH_NAME" = "main" ]; then
-            ENVIRONMENT="${{ env.ENVIRONMENT }}"
+            ENVIRONMENT="dev"
           else
             ENVIRONMENT="$BRANCH_NAME"
           fi
       
           echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
       
-          YAML_FILE="${{github.event.inputs.environment}}/environments/$ENVIRONMENT.yaml"
+          YAML_FILE="dev/environments/$ENVIRONMENT.yaml"
       
-          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"\n')
-          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }'| tr -d '\n')
+          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"')
+          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }')
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          cat <<EOF > ${{github.event.inputs.environment}}/backend.hcl
+          cat > dev/backend.hcl <<EOF
           bucket  = "${BUCKET_NAME}"
-          key     = "env/$ENVIRONMENT/terraform.tfstate"
-          region  = "${{ env.AWS_REGION }}"
+          key     = "env/${ENVIRONMENT}/terraform.tfstate"
+          region  = "${AWS_REGION}"
           encrypt = true
           EOF
         
