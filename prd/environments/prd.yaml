@@ -1,5 +1,5 @@
 environments:
-  dev:
+  prd:
     account:
       id: "125480470368"
     backend:
