@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "git::https://github.com/rumolog/infra-modulos//vpc?ref=main"
+  source = "git::https://github.com/danielbarreto1/modulo-infra//vpc?ref=main"
   vpc_cidr_block = "10.50.0.0/18"
   tags = {
     Name = "infra-dev-vpc"
@@ -12,7 +12,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "git::https://github.com/rumolog/infra-modulos//subnets?ref=main"
+  source = "git::https://github.com/danielbarreto1/modulo-infra//subnets?ref=main"
   vpc_id                     = module.vpc.vpc_id
   private_subnet_names       = var.private_subnet_names
   public_subnet_names        = var.public_subnet_names
@@ -22,7 +22,7 @@ module "subnets" {
 }
 
 # module "route_tables" {
-#   source = "git::https://github.com/rumolog/infra-modulos//route-tables?ref=main"
+#   source = "git::https://github.com/danielbarreto1/modulo-infra//route-tables?ref=main"
 
 #   vpc_id              = module.vpc.vpc_id
 #   public_subnet_ids   = module.subnets.public_subnet_ids
@@ -40,7 +40,7 @@ module "subnets" {
 # }
 
 # module "internet-gtw" {
-#   source = "git::https://github.com/rumolog/infra-modulos//internet-gtw?ref=main"
+#   source = "git::https://github.com/danielbarreto1/modulo-infra//internet-gtw?ref=main"
 #   vpc_id = module.vpc.vpc_id
 #   tags = {
 #     Name = "infra-dev-igw"
@@ -56,12 +56,12 @@ module "subnets" {
 # }
 
 # module "elastic-ip" {
-#   source = "git::https://github.com/rumolog/infra-modulos//elastic-ip?ref=main"
+#   source = "git::https://github.com/danielbarreto1/modulo-infra//elastic-ip?ref=main"
 #   eips   = var.eips
 # }
 
 # module "nat-gtw" {
-#   source = "git::https://github.com/rumolog/infra-modulos//nat-gtw?ref=main"
+#   source = "git::https://github.com/danielbarreto1/modulo-infra//nat-gtw?ref=main"
 #   allocation_id    = module.elastic-ip.allocation_ids["nat_gateway"]
 #   public_subnet_id = module.subnets.public_subnet_ids[0]
 #   depends_on       = [module.internet-gtw]
@@ -71,7 +71,7 @@ module "subnets" {
 # }
 
 module "flow_log_bucket" {
-  source = "git::https://github.com/rumolog/infra-modulos//flow-log-bucket?ref=main"
+  source = "git::https://github.com/danielbarreto1/modulo-infra//flow-log-bucket?ref=main"
   domain     = var.domain
   account_id = var.account_id
   region     = var.region
