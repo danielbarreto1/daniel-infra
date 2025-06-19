@@ -18,7 +18,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on:
+      - codebuild-cicd-${{ github.run_id }}-${{ github.run_attempt }}
 
     env:
       AWS_REGION: ${{ github.event.inputs.region  }}

@@ -58,10 +58,10 @@ jobs:
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          cat > dev/backend.hcl <<EOF
+          cat <<EOF > dev/backend.hcl
           bucket  = "${BUCKET_NAME}"
-          key     = "env/${ENVIRONMENT}/terraform.tfstate"
-          region  = "${AWS_REGION}"
+          key     = "env/$ENVIRONMENT/terraform.tfstate"
+          region  = "${{ env.AWS_REGION }}"
           encrypt = true
           EOF
         

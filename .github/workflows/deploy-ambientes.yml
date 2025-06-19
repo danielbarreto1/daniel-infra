@@ -13,7 +13,7 @@ on:
         required: true
         default: 'us-east-1'
       environment:
-        description: 'Environment (ex: dev, staging, prod)'
+        description: 'Environment (ex: dev, qas, prd)'
         required: true
         default: 'dev'
 
@@ -26,11 +26,12 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: ${{ github.event.inputs.region }}
-      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id }}
+      AWS_REGION: ${{ github.event.inputs.region  }}
+      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id  }}
       ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
-      ENVIRONMENT: ${{ github.event.inputs.environment }}
+      ENVIRONMENT: ${{ github.event.inputs.environment  }}
      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -70,14 +71,12 @@ jobs:
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          cat > ${{github.event.inputs.environment}}/backend.hcl <<EOF
+          cat <<EOF > ${{github.event.inputs.environment}}/backend.hcl
           bucket  = "${BUCKET_NAME}"
-          key     = "env/${ENVIRONMENT}/terraform.tfstate"
-          region  = "${AWS_REGION}"
+          key     = "env/$ENVIRONMENT/terraform.tfstate"
+          region  = "${{ env.AWS_REGION }}"
           encrypt = true
           EOF
-
-        
         
       - name: Terraform Init & Apply - Backend
         working-directory: ./${{ github.event.inputs.environment }}
@@ -92,19 +91,3 @@ jobs:
           terraform init -backend-config=./backend.hcl
           terraform plan -var="environment=${{ github.event.inputs.environment }}"
           terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
-
-          
-          
-      # - name: Upload S3 Environment Files to Bucket Root
-      #   run: |
-      #     BRANCH_NAME="${GITHUB_REF##*/}"
-      #     if [ "$BRANCH_NAME" = "main" ]; then
-      #       ENVIRONMENT="dev"
-      #     else
-      #       ENVIRONMENT="$BRANCH_NAME"
-      #     fi
-          
-      #     echo "Uploading files from s3/$ENVIRONMENT to s3://${{ env.BUCKET_NAME }}/"
-
-#          aws s3 cp "s3/$ENVIRONMENT" "s3://data-arch-s3-motor-ingestao-scripts-010928211830" --recursivename: Terraform Infra Deployment
-
