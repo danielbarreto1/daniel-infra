@@ -26,10 +26,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: ${{ github.event.inputs.region  }}
-      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id  }}
+      AWS_REGION: ${{ github.event.inputs.region }}
+      AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id }}
       ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
-      ENVIRONMENT: ${{ github.event.inputs.environment  }}
+      ENVIRONMENT: ${{ github.event.inputs.environment }}
      
 
     steps:
@@ -76,7 +76,7 @@ jobs:
           cat <<EOF > "${{github.event.inputs.environment}}/backend.hcl"
           bucket  = "${BUCKET_NAME}"
           key     = "env/$ENVIRONMENT/terraform.tfstate"
-          region  = "${{ env.AWS_REGION }}"
+          region  = ${{ github.event.inputs.region  }}
           encrypt = true
           EOF
         
