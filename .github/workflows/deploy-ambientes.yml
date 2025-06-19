@@ -66,17 +66,19 @@ jobs:
       
           YAML_FILE="${{github.event.inputs.environment}}/environments/$ENVIRONMENT.yaml"
       
-          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"\n')
-          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }' | tr -d '\n')
+          ACCOUNT_ID=$(grep 'id:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '"' | tr -d '\n')
+          BACKEND_PREFIX=$(grep 'name_prefix:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '\n')
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          BACKEND_FILE="${{github.event.inputs.environment}}/backend.hcl"
+          echo "BUCKET_NAME=$BUCKET_NAME"  # debug
 
-          echo "bucket  = \"${BUCKET_NAME}\"" > "$BACKEND_FILE"
-          echo "key     = \"env/$ENVIRONMENT/terraform.tfstate\"" >> "$BACKEND_FILE"
-          echo "region  = \"${{ env.AWS_REGION }}\"" >> "$BACKEND_FILE"
-          echo "encrypt = true" >> "$BACKEND_FILE"
+          cat <<EOF > "${{github.event.inputs.environment}}/backend.hcl"
+          bucket  = "${BUCKET_NAME}"
+          key     = "env/$ENVIRONMENT/terraform.tfstate"
+          region  = "${{ env.AWS_REGION }}"
+          encrypt = true
+          EOF
         
       - name: Terraform Init & Apply - Backend
         working-directory: ./${{ github.event.inputs.environment }}
