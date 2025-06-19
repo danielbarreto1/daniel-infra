@@ -71,12 +71,12 @@ jobs:
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
-          cat <<EOF > ${{github.event.inputs.environment}}/backend.hcl
-          bucket  = "tf-state-infra-new-account-125480470368"
-          key     = "env/$ENVIRONMENT/terraform.tfstate"
-          region  = "${{ env.AWS_REGION }}"
-          encrypt = true
-          EOF
+          BACKEND_FILE="${{github.event.inputs.environment}}/backend.hcl"
+
+          echo "bucket  = \"${BUCKET_NAME}\"" > "$BACKEND_FILE"
+          echo "key     = \"env/$ENVIRONMENT/terraform.tfstate\"" >> "$BACKEND_FILE"
+          echo "region  = \"${{ env.AWS_REGION }}\"" >> "$BACKEND_FILE"
+          echo "encrypt = true" >> "$BACKEND_FILE"
         
       - name: Terraform Init & Apply - Backend
         working-directory: ./${{ github.event.inputs.environment }}
