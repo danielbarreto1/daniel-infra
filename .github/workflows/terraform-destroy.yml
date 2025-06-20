@@ -12,14 +12,17 @@ on:
         required: true
         default: 'us-east-1'
       environment:
-        description: 'Environment (ex: dev, staging, prod)'
+        description: 'Environment (ex: dev, qas, prd)'
         required: true
         default: 'dev'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
-    runs-on:
-      - codebuild-cicd-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: ubuntu-latest
 
     env:
       AWS_REGION: ${{ github.event.inputs.region  }}
@@ -61,8 +64,8 @@ jobs:
       
           YAML_FILE="${{github.event.inputs.environment}}/environments/$ENVIRONMENT.yaml"
       
-          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"')
-          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }')
+          ACCOUNT_ID=$(grep 'id:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '"[:space:]' | xargs)
+          BACKEND_PREFIX=$(grep 'name_prefix:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '[:space:]' | xargs)
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
