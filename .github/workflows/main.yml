@@ -7,12 +7,11 @@ on:
 
 jobs:
   deploy:
-    runs-on:
-      - codebuild-cicd-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: ubuntu-latest
 
     env:
       AWS_REGION: us-east-1
-      AWS_ACCOUNT_ID: 663293147050
+      AWS_ACCOUNT_ID: 125480470368
       ROLE_ARN_ACCOUNT: arn:aws:iam::663293147050:role/github-actions-danielbarreeto1
       # BUCKET_NAME: infra-new-account-663293147050
 
