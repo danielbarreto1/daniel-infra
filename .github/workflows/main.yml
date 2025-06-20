@@ -50,11 +50,13 @@ jobs:
       
           YAML_FILE="dev/environments/$ENVIRONMENT.yaml"
       
-          ACCOUNT_ID=$(grep 'id:' $YAML_FILE | awk '{ print $2 }' | tr -d '"')
-          BACKEND_PREFIX=$(grep 'name_prefix:' $YAML_FILE | awk '{ print $2 }')
+          ACCOUNT_ID=$(grep 'id:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '"[:space:]' | xargs)
+          BACKEND_PREFIX=$(grep 'name_prefix:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '[:space:]' | xargs)
       
           BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
       
+          echo "BUCKET_NAME='$BUCKET_NAME'" | cat -A  # Debug pra ver se tem \n ou ^M
+
           cat <<EOF > dev/backend.hcl
           bucket  = "${BUCKET_NAME}"
           key     = "env/$ENVIRONMENT/terraform.tfstate"
@@ -74,7 +76,7 @@ jobs:
         run: |
           terraform init -backend-config=./backend.hcl
           terraform plan -var="environment=${{ env.ENVIRONMENT }}"
-          terraform apply -auto-approve -var="environment=${{ env.ENVIRONMENT }}"
+#          terraform apply -auto-approve -var="environment=${{ env.ENVIRONMENT }}"
 
           
           
