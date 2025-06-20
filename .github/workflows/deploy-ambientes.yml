@@ -69,14 +69,14 @@ jobs:
           ACCOUNT_ID=$(grep 'id:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '"' | tr -d '\n')
           BACKEND_PREFIX=$(grep 'name_prefix:' "$YAML_FILE" | awk '{ print $2 }' | tr -d '\n')
       
-          BUCKET_NAME="tf-state-${BACKEND_PREFIX}-${ACCOUNT_ID}"
+          BUCKET_NAME="tf-state-infra-new-account-${ACCOUNT_ID}"
       
           echo "BUCKET_NAME=$BUCKET_NAME"  # debug
 
           cat <<EOF > "${{github.event.inputs.environment}}/backend.hcl"
           bucket  = "${BUCKET_NAME}"
           key     = "env/$ENVIRONMENT/terraform.tfstate"
-          region  = ${{ github.event.inputs.region  }}
+          region  = ${{ github.event.inputs.region }}
           encrypt = true
           EOF
         
