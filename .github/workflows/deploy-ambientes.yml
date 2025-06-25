@@ -93,4 +93,4 @@ jobs:
         run: |
           terraform init -backend-config=./backend.hcl
           terraform plan -var="environment=${{ github.event.inputs.environment }}"
-#          terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
+          terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
