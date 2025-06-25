@@ -27,7 +27,7 @@ jobs:
     env:
       AWS_REGION: ${{ github.event.inputs.region  }}
       AWS_ACCOUNT_ID: ${{ github.event.inputs.account_id  }}
-      ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/TerraformGithubAction
+      ROLE_ARN_ACCOUNT: arn:aws:iam::${{ github.event.inputs.account_id }}:role/github-actions-danielbarreeto1
       ENVIRONMENT: ${{ github.event.inputs.environment  }}
 
     steps:
